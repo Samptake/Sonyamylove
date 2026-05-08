@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Для тебя</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --color-primary: #8B6F7A;
+            --color-secondary: #D4A5A5;
+            --color-gold: #D4AF37;
+            --color-gold-light: #F3E5AB;
+            --color-bg-warm: #FAF6F5;
+            --color-bg-soft: #F5EDEB;
+            --color-text: #4A4A4A;
+            --color-text-light: #7D6B6B;
+            --shadow-soft: 0 4px 20px rgba(139, 111, 122, 0.08);
+            --shadow-medium: 0 8px 30px rgba(139, 111, 122, 0.12);
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background-color: var(--color-bg-warm);
+            background-image: 
+                radial-gradient(at 20% 30%, rgba(212, 165, 165, 0.15) 0px, transparent 50%),
+                radial-gradient(at 80% 70%, rgba(139, 111, 122, 0.1) 0px, transparent 50%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: var(--color-text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        header { text-align: center; margin-bottom: 60px; padding: 40px 20px; position: relative; }
+        header::before, header::after {
+            content: ''; position: absolute; width: 60px; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--color-secondary), transparent); top: 50%;
+        }
+        header::before { left: 10%; } header::after { right: 10%; }
+        h1 {
+            font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 400; font-style: italic; color: var(--color-primary);
+            letter-spacing: -0.02em; margin-bottom: 12px; position: relative; z-index: 1;
+        }
+        .subtitle {
+            font-family: 'Montserrat', sans-serif; font-size: 0.95rem; font-weight: 300;
+            color: var(--color-text-light); letter-spacing: 0.05em; text-transform: uppercase;
+        }
+        .progress-section {
+            background: white; border-radius: 16px; padding: 28px 32px; margin-bottom: 48px;
+            box-shadow: var(--shadow-soft); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;
+        }
+        .progress-info { flex: 1; min-width: 200px; }
+        .progress-label { font-family: 'Montserrat', sans-serif; font-size: 0.85rem; color: var(--color-text-light); margin-bottom: 8px; letter-spacing: 0.02em; }
+        .progress-bar { height: 4px; background: var(--color-bg-soft); border-radius: 2px; overflow: hidden; position: relative; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--color-secondary), var(--color-primary)); border-radius: 2px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .progress-stats { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--color-primary); font-style: italic; }
+        .tickets-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 24px; }
+        .ticket {
+            background: white; border-radius: 12px; padding: 32px 24px; position: relative; cursor: pointer;
+            transition: var(--transition); box-shadow: var(--shadow-soft); border: 1px solid rgba(212, 165, 165, 0.2);
+            overflow: hidden; min-height: 180px; display: flex; flex-direction: column; justify-content: center;
+        }
+        .ticket::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+            background: linear-gradient(90deg, var(--color-secondary), var(--color-primary));
+            transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease;
+        }
+        .ticket:hover::before { transform: scaleX(1); }
+        .ticket.locked { background: var(--color-bg-soft); cursor: not-allowed; opacity: 0.6; }
+        .ticket.unlocked { animation: fadeInUp 0.6s ease; }
+        .ticket.unlocked:hover { transform: translateY(-4px); box-shadow: var(--shadow-medium); }
+        .ticket.today { border: 1.5px solid var(--color-secondary); animation: gentlePulse 3s ease-in-out infinite; }
+        
+        .ticket.finale {
+            background: linear-gradient(135deg, #FFF 0%, #FFF8E1 100%);
+            border: 2px solid var(--color-gold);
+        }
+        .ticket.finale .ticket-number { color: var(--color-gold); font-weight: bold; }
+        .ticket.finale::before { background: linear-gradient(90deg, var(--color-gold), #F3E5AB); }
+
+        @keyframes gentlePulse { 0%, 100% { box-shadow: 0 4px 20px rgba(212, 165, 165, 0.2); } 50% { box-shadow: 0 8px 30px rgba(212, 165, 165, 0.35); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .ticket-number { font-family: 'Montserrat', sans-serif; font-size: 0.75rem; color: var(--color-secondary); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px; font-weight: 500; }
+        .ticket-content { font-size: 1.25rem; line-height: 1.7; color: var(--color-text); }
+        .ticket.locked .ticket-content { display: none; }
+        .locked-indicator { display: none; font-family: 'Montserrat', sans-serif; font-size: 0.85rem; color: var(--color-text-light); text-align: center; }
+        .locked-indicator::before { content: '•••'; display: block; font-size: 1.5rem; margin-bottom: 8px; letter-spacing: 0.3em; }
+        .ticket.locked .locked-indicator { display: block; }
+
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(74, 74, 74, 0.6); backdrop-filter: blur(4px); z-index: 1000;
+            justify-content: center; align-items: center; padding: 20px; opacity: 0; transition: opacity 0.3s ease;
+        }
+        .modal.active { display: flex; opacity: 1; }
+        .modal-content {
+            background: white; border-radius: 20px; padding: 48px 40px; max-width: 500px; width: 100%;
+            text-align: center; position: relative; box-shadow: 0 25px 80px rgba(0, 0, 0, 0.15);
+            transform: scale(0.95); transition: transform 0.3s ease;
+        }
+        .modal.active .modal-content { transform: scale(1); }
+        .modal-decoration { width: 60px; height: 1px; background: var(--color-secondary); margin: 0 auto 24px; }
+        .modal-text { font-family: 'Playfair Display', serif; font-size: 1.8rem; line-height: 1.6; color: var(--color-primary); font-style: italic; margin-bottom: 32px; }
+        .modal-close {
+            background: transparent; border: 1px solid var(--color-secondary); color: var(--color-primary);
+            padding: 12px 32px; border-radius: 25px; font-family: 'Montserrat', sans-serif; font-size: 0.9rem;
+            cursor: pointer; transition: var(--transition); letter-spacing: 0.05em;
+        }
+        .modal-close:hover { background: var(--color-secondary); color: white; }
+
+        .modal-content.finale {
+            background: linear-gradient(135deg, #FFFFFF 0%, #FFF8E1 100%);
+            border: 3px solid var(--color-gold);
+            max-width: 600px;
+        }
+        .modal-content.finale .modal-text {
+            color: #5C4B36;
+            font-size: 1.6rem;
+        }
+        .modal-content.finale .modal-decoration { background: var(--color-gold); width: 100px; height: 2px; }
+        .modal-content.finale .modal-close {
+            border-color: var(--color-gold);
+            color: #8B6508;
+            font-weight: bold;
+        }
+        .modal-content.finale .modal-close:hover {
+            background: var(--color-gold);
+            color: white;
+        }
+        .finale-icon { font-size: 3rem; margin-bottom: 10px; display: block; }
+
+        @media (max-width: 640px) {
+            body { padding: 24px 16px; }
+            .tickets-grid { grid-template-columns: 1fr; gap: 16px; }
+            .progress-section { flex-direction: column; align-items: stretch; padding: 24px; }
+            .ticket { min-height: 140px; padding: 24px 20px; }
+            .modal-content { padding: 36px 24px; }
+            .modal-text { font-size: 1.5rem; }
+        }
+        
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            animation: fall linear forwards;
+            z-index: 2000;
+            pointer-events: none;
+        }
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Для самой особенной</h1>
+            <p class="subtitle">50 маленьких напоминаний о том, какая ты замечательная</p>
+        </header>
+
+        <section class="progress-section">
+            <div class="progress-info">
+                <div class="progress-label">Твой прогресс</div>
+                <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 0%"></div></div>
+            </div>
+            <div class="progress-stats"><span id="openedCount">0</span> / <span id="totalCount">50</span></div>
+        </section>
+
+        <main class="tickets-grid" id="ticketsGrid"></main>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-decoration"></div>
+            <div class="modal-text" id="modalText"></div>
+            <button class="modal-close" onclick="closeModal()">Закрыть</button>
+        </div>
+    </div>
+
+    <div class="modal" id="modalFinale">
+        <div class="modal-content finale">
+            <span class="finale-icon">👑</span>
+            <div class="modal-decoration"></div>
+            <div class="modal-text">
+                Мы прошли этот путь вместе.<br><br>
+                50 дней, 50 причин, но ни одна из них не описывает тебя полностью.<br><br>
+                Спасибо, что ты есть. Люблю тебя. ❤️
+            </div>
+            <button class="modal-close" onclick="closeModal()">Это было прекрасно</button>
+        </div>
+    </div>
+
+    <script>
+        const reasons = [
+            "Ты находишь тепло даже там, где вокруг холод",
+            "Твоя улыбка может вытащить меня из любой темноты",
+            "Ты умеешь быть мягкой, но не позволяешь себя сломать",
+            "Ты чувствуешь моё настроение до того, как я сам его пойму",
+            "Ты не боишься говорить мне правду, даже когда мне больно её слышать",
+            "Ты помнишь мои мелочи, которые я давно забыл",
+            "Твоя забота никогда не бывает громкой, но всегда вовремя",
+            "Ты умеешь прощать, хотя я этого часто не заслуживаю",
+            "Ты находишь силы быть нежной, даже когда мир груб",
+            "Твои слёзы не делают тебя слабой, они делают тебя живой",
+            "Ты умеешь злиться, но не разрушать",
+            "Твоё присутствие рядом лечит лучше любых слов",
+            "Ты не требуешь от меня быть идеальным, но веришь, что я могу стать лучше",
+            "Ты умеешь быть сильной за двоих, когда я выдыхаюсь",
+            "Твои объятия я чувствую даже через экран",
+            "Ты создаёшь уют из ничего",
+            "Ты не боишься быть смешной, и это делает тебя прекрасной",
+            "Ты умеешь радоваться простым вещам и заражать этим меня",
+            "Твоя ревность говорит о том, как сильно ты любишь, и я это ценю",
+            "Ты помнишь о моих делах, даже когда у самой голова идёт кругом",
+            "Ты не бросаешь меня в ссоре, а остаёшься, чтобы разобраться",
+            "Твои стихи, которые ты стесняешься показывать, на самом деле прекрасны",
+            "Ты умеешь говорить «я устала», и это честно",
+            "Ты не играешь роли, ты просто есть",
+            "Твои руки пахнут домом",
+            "Ты умеешь молчать так, что я слышу больше, чем в словах",
+            "Ты не обещаешь лишнего, но делаешь больше, чем обещала",
+            "Ты выбираешь меня снова и снова, даже когда я даю повод этого не делать",
+            "Ты умеешь быть разной, и каждый раз ты настоящая",
+            "Твои глаза говорят больше, чем тысячи слов",
+            "Ты умеешь быть опорой, когда у самой шатает земля",
+            "Ты не боишься спросить, что со мной происходит",
+            "Ты умеешь пережидать моё плохое настроение, не обижаясь",
+            "Твоя любовь не громкая, но она огромная",
+            "Ты умеешь радоваться за меня искренне",
+            "Ты не пытаешься меня переделать, но помогаешь расти",
+            "Твои идеи о том, как провести время, всегда лучше моих",
+            "Ты умеешь быть благодарной за мелочи",
+            "Ты не убегаешь, когда тяжело, а остаёшься рядом",
+            "Твоя интуиция на людей работает безотказно, и я рад, что она выбрала меня",
+            "Ты умеешь быть терпеливой, когда я туплю",
+            "Ты делаешь мою жизнь ярче не потому, что что-то делаешь, а потому что ты есть",
+            "Ты умеешь смеяться до слёз, и я люблю этот смех",
+            "Ты не боишься показать, что тебе больно, это делает нас ближе",
+            "Ты умеешь ждать, но не для того чтобы проверять, а потому что веришь",
+            "Твои вкусы в еде и в жизни всегда интереснее моих",
+            "Ты умеешь принимать извинения, даже когда внутри ещё кипит",
+            "Ты растишь меня незаметно, но каждый день",
+            "Ты умеешь находить красоту в наших обычных буднях",
+            "Открыть финал"
+        ];
+
+        const TOTAL_DAYS = reasons.length;
+        let openedTickets = JSON.parse(localStorage.getItem('openedTickets') || '[]');
+        let startDate = localStorage.getItem('startDate');
+
+        if (!startDate) {
+            startDate = new Date().toISOString();
+            localStorage.setItem('startDate', startDate);
+        }
+
+        // ИСПРАВЛЕННАЯ ЛОГИКА: Math.floor + 1 гарантирует, что День 1 открыт СРАЗУ
+        function getDaysElapsed() {
+            const start = new Date(localStorage.getItem('startDate'));
+            const now = new Date();
+            
+            const diffTime = now - start;
+            
+            // Math.floor(0) + 1 = 1 (День 1 открыт сразу)
+            // Math.floor(23h) + 1 = 1 (День 1 открыт весь день)
+            // Math.floor(25h) + 1 = 2 (День 2 открывается через сутки)
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            
+            return Math.min(diffDays, TOTAL_DAYS);
+        }
+
+        function createTickets() {
+            const grid = document.getElementById('ticketsGrid');
+            const daysElapsed = getDaysElapsed();
+            grid.innerHTML = '';
+
+            reasons.forEach((reason, index) => {
+                const ticket = document.createElement('div');
+                const ticketNum = index + 1;
+                const isUnlocked = ticketNum <= daysElapsed;
+                const isToday = ticketNum === daysElapsed && ticketNum <= TOTAL_DAYS;
+                const isFinale = ticketNum === 50;
+
+                let classes = `ticket ${isUnlocked ? 'unlocked' : 'locked'} ${isToday ? 'today' : ''}`;
+                if (isFinale) classes += ' finale';
+
+                ticket.className = classes;
+                ticket.onclick = () => openTicket(index, isUnlocked);
+
+                ticket.innerHTML = `
+                    <div class="ticket-number">${isFinale ? 'ФИНАЛ' : 'День ' + ticketNum}</div>
+                    <div class="ticket-content">${reason}</div>
+                    <div class="locked-indicator">Откроется ${getOpenDate(ticketNum)}</div>
+                `;
+
+                grid.appendChild(ticket);
+            });
+
+            updateProgress();
+        }
+
+        function getOpenDate(dayNum) {
+            const start = new Date(localStorage.getItem('startDate'));
+            const openDate = new Date(start);
+            openDate.setDate(start.getDate() + dayNum - 1);
+            
+            if (dayNum === 1) return 'сегодня';
+            if (dayNum === 2) return 'завтра';
+            return openDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+        }
+
+        function openTicket(index, isUnlocked) {
+            if (!isUnlocked) {
+                const daysElapsed = getDaysElapsed();
+                const daysLeft = index + 1 - daysElapsed;
+                const message = daysLeft === 1 ? 'Завтра' : `Через ${daysLeft} дн.`;
+                alert(`Этот билетик откроется ${message}`);
+                return;
+            }
+
+            if (index === 49) {
+                const finaleModal = document.getElementById('modalFinale');
+                finaleModal.classList.add('active');
+                launchConfetti();
+                
+                if (!openedTickets.includes(index)) {
+                    openedTickets.push(index);
+                    localStorage.setItem('openedTickets', JSON.stringify(openedTickets));
+                    updateProgress();
+                }
+            } else {
+                const modal = document.getElementById('modal');
+                document.getElementById('modalText').textContent = reasons[index];
+                modal.classList.add('active');
+
+                if (!openedTickets.includes(index)) {
+                    openedTickets.push(index);
+                    localStorage.setItem('openedTickets', JSON.stringify(openedTickets));
+                    updateProgress();
+                }
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            document.getElementById('modalFinale').classList.remove('active');
+        }
+
+        function updateProgress() {
+            const percentage = (openedTickets.length / TOTAL_DAYS) * 100;
+            document.getElementById('progressFill').style.width = percentage + '%';
+            document.getElementById('openedCount').textContent = openedTickets.length;
+        }
+
+        function launchConfetti() {
+            const colors = ['#D4AF37', '#D4A5A5', '#8B6F7A', '#FFD700', '#FF69B4'];
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                confetti.style.top = '-10px';
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 4000);
+            }
+        }
+
+        document.getElementById('modal').addEventListener('click', e => { if (e.target === this) closeModal(); });
+        document.getElementById('modalFinale').addEventListener('click', e => { if (e.target === this) closeModal(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+        createTickets();
+    </script>
+</body>
+</html>
