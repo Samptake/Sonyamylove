@@ -188,8 +188,8 @@
             <span class="finale-icon">👑</span>
             <div class="modal-decoration"></div>
             <div class="modal-text">
-                Мы прошли этот путь вместе.<br><br>
-                50 дней, 50 причин, но ни одна из них не описывает тебя полностью.<br><br>
+                Это лишь маленькое напоминание о том, как много ты для меня значишь.<br><br>
+                И это только начало нашего пути.<br><br>
                 Спасибо, что ты есть. Люблю тебя. ❤️
             </div>
             <button class="modal-close" onclick="closeModal()">Это было прекрасно</button>
@@ -259,16 +259,11 @@
             localStorage.setItem('startDate', startDate);
         }
 
-        // ИСПРАВЛЕННАЯ ЛОГИКА: Math.floor + 1 гарантирует, что День 1 открыт СРАЗУ
         function getDaysElapsed() {
             const start = new Date(localStorage.getItem('startDate'));
             const now = new Date();
             
             const diffTime = now - start;
-            
-            // Math.floor(0) + 1 = 1 (День 1 открыт сразу)
-            // Math.floor(23h) + 1 = 1 (День 1 открыт весь день)
-            // Math.floor(25h) + 1 = 2 (День 2 открывается через сутки)
             const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
             
             return Math.min(diffDays, TOTAL_DAYS);
