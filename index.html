@@ -252,21 +252,28 @@
 
         const TOTAL_DAYS = reasons.length;
         let openedTickets = JSON.parse(localStorage.getItem('openedTickets') || '[]');
+
+        // 🔹 Логика календарных дней по Калининграду (UTC+2)
+        function getKaliningradDate() {
+            const formatter = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Kaliningrad' });
+            return formatter.format(new Date()); // Возвращает "YYYY-MM-DD"
+        }
+
         let startDate = localStorage.getItem('startDate');
+        const todayStr = getKaliningradDate();
 
         if (!startDate) {
-            startDate = new Date().toISOString();
+            startDate = todayStr;
             localStorage.setItem('startDate', startDate);
         }
 
         function getDaysElapsed() {
-            const start = new Date(localStorage.getItem('startDate'));
-            const now = new Date();
-            
+            const start = new Date(startDate + 'T00:00:00Z');
+            const now = new Date(todayStr + 'T00:00:00Z');
             const diffTime = now - start;
+            // +1 гарантирует, что День 1 открыт в день старта
             const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
-            
-            return Math.min(diffDays, TOTAL_DAYS);
+            return Math.max(1, Math.min(diffDays, TOTAL_DAYS));
         }
 
         function createTickets() {
@@ -300,10 +307,10 @@
         }
 
         function getOpenDate(dayNum) {
-            const start = new Date(localStorage.getItem('startDate'));
+            const start = new Date(startDate + 'T00:00:00Z');
             const openDate = new Date(start);
-            openDate.setDate(start.getDate() + dayNum - 1);
-            
+            openDate.setUTCDate(start.getUTCDate() + dayNum - 1);
+
             if (dayNum === 1) return 'сегодня';
             if (dayNum === 2) return 'завтра';
             return openDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
