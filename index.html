@@ -197,6 +197,12 @@
     </div>
 
     <script>
+        // ⚙️ НАСТРОЙКА ДАТЫ СТАРТА
+        // Укажите дату в формате YYYY-MM-DD. 
+        // Сейчас стоит вчерашняя дата, чтобы сегодня открылся 2-й билет.
+        // Если оставить '', отсчёт начнётся с момента первого открытия сайта.
+        const CONFIG_START_DATE = '2026-05-08'; 
+
         const reasons = [
             "Ты находишь тепло даже там, где вокруг холод",
             "Твоя улыбка может вытащить меня из любой темноты",
@@ -253,17 +259,16 @@
         const TOTAL_DAYS = reasons.length;
         let openedTickets = JSON.parse(localStorage.getItem('openedTickets') || '[]');
 
-        // 🔹 Логика календарных дней по Калининграду (UTC+2)
         function getKaliningradDate() {
             const formatter = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Kaliningrad' });
-            return formatter.format(new Date()); // Возвращает "YYYY-MM-DD"
+            return formatter.format(new Date());
         }
 
         let startDate = localStorage.getItem('startDate');
         const todayStr = getKaliningradDate();
 
         if (!startDate) {
-            startDate = todayStr;
+            startDate = CONFIG_START_DATE || todayStr;
             localStorage.setItem('startDate', startDate);
         }
 
@@ -271,7 +276,6 @@
             const start = new Date(startDate + 'T00:00:00Z');
             const now = new Date(todayStr + 'T00:00:00Z');
             const diffTime = now - start;
-            // +1 гарантирует, что День 1 открыт в день старта
             const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
             return Math.max(1, Math.min(diffDays, TOTAL_DAYS));
         }
